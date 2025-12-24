@@ -1,3 +1,0 @@
-[console_scripts]
-swerve_controller = my_robot_description.swerve_controller:main
-
