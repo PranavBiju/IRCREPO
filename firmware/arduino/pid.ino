@@ -31,6 +31,8 @@
 #define ENC4_A 18
 #define ENC4_B 19
 
+#define PI 3.14
+
 //PCNT SETUP
 pcnt_unit_t encUnits[4] = {PCNT_UNIT_0, PCNT_UNIT_1, PCNT_UNIT_2, PCNT_UNIT_3};
 volatile int32_t encoderCount[4] = {0, 0, 0, 0};
@@ -53,6 +55,9 @@ rclc_support_t support;
 geometry_msgs__msg__Twist cmd_vel_msg;
 std_msgs__msg__Int32MultiArray enc_msg;
 nav_msgs__msg__Odometry odom_msg;
+//addition: JointState publisher
+rcl_publisher_t joint_state_pub;
+sensor_msgs__msg__JointState joint_state_msg;
 
 // MOTOR OBJECTS
 MDD10A motorLF(M1_PWM, M1_DIR, ENC1_A, ENC1_B);
@@ -185,6 +190,38 @@ void cmd_vel_callback(const void * msgin) {
   Serial.println(cmd_w);
 }
 
+//initialising JointState
+void init_joint_state_msg()
+{
+  joint_state_msg.name.data = (rosidl_runtime_c__String *)malloc(4 * sizeof(rosidl_runtime_c__String));
+  joint_state_msg.name.size = 4;
+  joint_state_msg.name.capacity = 4;
+
+  rosidl_runtime_c__String__assign(
+    &joint_state_msg.name.data[0],
+    "base_front_right_wheel_joint"
+  );
+  rosidl_runtime_c__String__assign(
+    &joint_state_msg.name.data[1],
+    "base_front_left_wheel_joint"
+  );
+  rosidl_runtime_c__String__assign(
+    &joint_state_msg.name.data[2],
+    "base_back_right_wheel_joint"
+  );
+  rosidl_runtime_c__String__assign(
+    &joint_state_msg.name.data[3],
+    "base_back_left_wheel_joint"
+  );
+
+  joint_state_msg.velocity.data = (double *)malloc(4 * sizeof(double));
+  joint_state_msg.velocity.size = 4;
+  joint_state_msg.velocity.capacity = 4;
+
+  joint_state_msg.position.size = 0;
+  joint_state_msg.effort.size   = 0;
+}
+
 void setup() {
   Serial.begin(115200);
   delay(50);
@@ -220,7 +257,16 @@ void setup() {
     ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32MultiArray),
     "/encoders"
   );
-
+  
+  //JointState publisher
+  rclc_publisher_init_default(
+  &joint_state_pub,
+  &node,
+  ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, JointState),
+  "/joint_states"
+  );
+  init_joint_state_msg();
+  
   // Executor setup
   rclc_executor_init(&executor, &support.context, 2, &allocator);
   rclc_executor_add_subscription(&executor, &subscriber, &cmd_vel_msg, &cmd_vel_callback, ON_NEW_DATA);
@@ -271,12 +317,29 @@ void loop() {
   int velRF = computePIDandOutput(motorRF, pidRF, posRF, currTimeUs, -target_ticks_RF, KP_RF, KI_RF, KD_RF,true);
   int velRR = computePIDandOutput(motorRR, pidRR, posRR, currTimeUs, target_ticks_RR, KP_RR, KI_RR, KD_RR);
 
+  //converting ticks/sec to radians/sec
+  float vel_FL_ticks = velLF;
+  float vel_FR_ticks = velRF;
+  float vel_BL_ticks = velLR;
+  float vel_BR_ticks = velRR;
+  float vel_FL_rad = (vel_FL_ticks / ENCODER_PPR) * 2.0f * PI;
+  float vel_FR_rad = (vel_FR_ticks / ENCODER_PPR) * 2.0f * PI;
+  float vel_BL_rad = (vel_BL_ticks / ENCODER_PPR) * 2.0f * PI;
+  float vel_BR_rad = (vel_BR_ticks / ENCODER_PPR) * 2.0f * PI;
+  
   // Publish encoders
   enc_msg.data.data[0] = posLF;
   enc_msg.data.data[1] = posLR;
   enc_msg.data.data[2] = posRF;
   enc_msg.data.data[3] = posRR;
   rcl_publish(&publisher, &enc_msg, NULL);
+
+  //publish joint states
+  joint_state_msg.velocity.data[0] = vel_FR_rad;
+  joint_state_msg.velocity.data[1] = vel_FL_rad;
+  joint_state_msg.velocity.data[2] = vel_BR_rad;
+  joint_state_msg.velocity.data[3] = vel_BL_rad;
+  rcl_publish(&joint_state_pub, &joint_state_msg, NULL);
 
   delay(50);
 }
