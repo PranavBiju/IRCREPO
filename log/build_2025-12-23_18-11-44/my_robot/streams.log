@@ -1,0 +1,28 @@
+[0.515s] Invoking command in '/home/pranav/ros2_ws/src/my_robot': PYTHONPATH=/home/pranav/ros2_ws/src/build/my_robot/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pranav/ros2_ws/src/install/my_robot/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/my_robot build --build-base /home/pranav/ros2_ws/src/build/my_robot/build install --record /home/pranav/ros2_ws/src/build/my_robot/install.log --single-version-externally-managed install_data
+[0.609s] running egg_info
+[0.609s] creating ../build/my_robot/my_robot.egg-info
+[0.609s] writing ../build/my_robot/my_robot.egg-info/PKG-INFO
+[0.609s] writing dependency_links to ../build/my_robot/my_robot.egg-info/dependency_links.txt
+[0.609s] writing entry points to ../build/my_robot/my_robot.egg-info/entry_points.txt
+[0.610s] writing requirements to ../build/my_robot/my_robot.egg-info/requires.txt
+[0.610s] writing top-level names to ../build/my_robot/my_robot.egg-info/top_level.txt
+[0.610s] writing manifest file '../build/my_robot/my_robot.egg-info/SOURCES.txt'
+[0.610s] reading manifest file '../build/my_robot/my_robot.egg-info/SOURCES.txt'
+[0.610s] writing manifest file '../build/my_robot/my_robot.egg-info/SOURCES.txt'
+[0.610s] running build
+[0.610s] running install
+[0.611s] running install_data
+[0.611s] creating /home/pranav/ros2_ws/src/install/my_robot/share/ament_index
+[0.611s] creating /home/pranav/ros2_ws/src/install/my_robot/share/ament_index/resource_index
+[0.611s] creating /home/pranav/ros2_ws/src/install/my_robot/share/ament_index/resource_index/packages
+[0.611s] copying resource/my_robot -> /home/pranav/ros2_ws/src/install/my_robot/share/ament_index/resource_index/packages
+[0.611s] copying package.xml -> /home/pranav/ros2_ws/src/install/my_robot/share/my_robot
+[0.612s] creating /home/pranav/ros2_ws/src/install/my_robot/share/my_robot/launch
+[0.612s] copying launch/ekf_launch.py -> /home/pranav/ros2_ws/src/install/my_robot/share/my_robot/launch
+[0.612s] creating /home/pranav/ros2_ws/src/install/my_robot/share/my_robot/config
+[0.612s] copying config/ekf.yaml -> /home/pranav/ros2_ws/src/install/my_robot/share/my_robot/config
+[0.612s] running install_egg_info
+[0.613s] Copying ../build/my_robot/my_robot.egg-info to /home/pranav/ros2_ws/src/install/my_robot/lib/python3.10/site-packages/my_robot-0.0.1-py3.10.egg-info
+[0.614s] running install_scripts
+[0.622s] writing list of installed files to '/home/pranav/ros2_ws/src/build/my_robot/install.log'
+[0.649s] Invoked command in '/home/pranav/ros2_ws/src/my_robot' returned '0': PYTHONPATH=/home/pranav/ros2_ws/src/build/my_robot/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pranav/ros2_ws/src/install/my_robot/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/my_robot build --build-base /home/pranav/ros2_ws/src/build/my_robot/build install --record /home/pranav/ros2_ws/src/build/my_robot/install.log --single-version-externally-managed install_data

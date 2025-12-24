@@ -1,0 +1,33 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 50 # Hz
+
+    # 1. Publishes the state of all joints (needed for Rviz to show the robot moving)
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    # 2. Controls the steering (Position)
+    pivot_controller:
+      type: position_controllers/JointGroupPositionController
+
+    # 3. Controls the driving (Velocity)
+    drive_controller:
+      type: velocity_controllers/JointGroupVelocityController
+
+pivot_controller:
+  ros__parameters:
+    joints:
+      - base_front_right_pivot_joint
+      - base_front_left_pivot_joint
+      - base_back_right_pivot_joint
+      - base_back_left_pivot_joint
+    interface_name: position  # <--- CRITICAL FIX: Tells ROS to use Position mode
+
+drive_controller:
+  ros__parameters:
+    joints:
+      - base_front_right_wheel_joint
+      - base_front_left_wheel_joint
+      - base_back_right_wheel_joint
+      - base_back_left_wheel_joint
+    interface_name: velocity  # <--- CRITICAL FIX: Tells ROS to use Velocity mode
