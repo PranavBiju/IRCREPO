@@ -4,3 +4,5 @@ log/
 .vSCode/
 .idea/
 *.pyc
+my_pkg/
+my_robot/
