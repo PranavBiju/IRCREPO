@@ -52,7 +52,8 @@ rclc_executor_t executor;
 rcl_node_t node;
 rcl_allocator_t allocator;
 rclc_support_t support;
-geometry_msgs__msg__Twist cmd_vel_msg;
+//geometry_msgs__msg__Twist cmd_vel_msg;
+std_msgs__msg__Float64MultiArray "/drive_controller/commands"
 std_msgs__msg__Int32MultiArray enc_msg;
 nav_msgs__msg__Odometry odom_msg;
 //addition: JointState publisher
@@ -179,7 +180,7 @@ geometry_msgs__msg__Quaternion yawToQuaternion(float yaw) {
 }
 
 // ---------------- CMD_VEL CALLBACK ----------------
-void cmd_vel_callback(const void * msgin) {
+/*void cmd_vel_callback(const void * msgin) {
   const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
   cmd_v = msg->linear.x;
   cmd_w = msg->angular.z;
@@ -188,6 +189,19 @@ void cmd_vel_callback(const void * msgin) {
   Serial.print(cmd_v);
   Serial.print(", w: ");
   Serial.println(cmd_w);
+}*/
+//wheel cmd callback
+void wheel_cmd_callback(const void * msgin)
+{
+  const std_msgs__msg__Float64MultiArray * msg =
+    (const std_msgs__msg__Float64MultiArray *)msgin;
+
+  if (msg->data.size < 4) return;
+
+  cmd_FR = msg->data.data[0];
+  cmd_FL = msg->data.data[1];
+  cmd_BR = msg->data.data[2];
+  cmd_BL = msg->data.data[3];
 }
 
 //initialising JointState
@@ -307,10 +321,14 @@ void loop() {
   float v_left  = v - (w * WHEEL_BASE / 2.0);
   float v_right = v + (w * WHEEL_BASE / 2.0);
 
-  float target_ticks_LF = linearVelToTicksPerSec(v_left);
-  float target_ticks_LR = linearVelToTicksPerSec(v_left);
-  float target_ticks_RF = linearVelToTicksPerSec(v_right); 
-  float target_ticks_RR = linearVelToTicksPerSec(v_right);
+  //float target_ticks_LF = linearVelToTicksPerSec(v_left);
+  //float target_ticks_LR = linearVelToTicksPerSec(v_left);
+  //float target_ticks_RF = linearVelToTicksPerSec(v_right); 
+  //float target_ticks_RR = linearVelToTicksPerSec(v_right);
+  float target_ticks_LF = (cmd_FL / (2.0f * PI)) * ENCODER_PPR;
+  float target_ticks_LR = (cmd_BL / (2.0f * PI)) * ENCODER_PPR;
+  float target_ticks_RF = (cmd_FR / (2.0f * PI)) * ENCODER_PPR;
+  float target_ticks_RR = (cmd_BR / (2.0f * PI)) * ENCODER_PPR;
 
   int velLF = computePIDandOutput(motorLF, pidLF, posLF, currTimeUs, target_ticks_LF, KP_LF, KI_LF, KD_LF, true);
   int velLR = computePIDandOutput(motorLR, pidLR, posLR, currTimeUs, target_ticks_LR, KP_LR, KI_LR, KD_LR);
